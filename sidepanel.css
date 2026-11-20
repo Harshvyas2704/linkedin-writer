@@ -1,0 +1,46 @@
+* { box-sizing: border-box; }
+body {
+  font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 12px;
+  color: #1d2226;
+  background: #f4f2ee;
+}
+.tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+.tab {
+  flex: 1; padding: 7px; border: 1px solid #d0d0d0; background: #fff;
+  border-radius: 6px; cursor: pointer; font-weight: 500;
+}
+.tab.active { background: #0a66c2; color: #fff; border-color: #0a66c2; }
+.view { display: flex; flex-direction: column; gap: 10px; }
+.view[hidden] { display: none; }
+label { display: flex; flex-direction: column; gap: 4px; font-weight: 500; }
+input, select, textarea {
+  font: inherit; padding: 7px 8px; border: 1px solid #c8c8c8;
+  border-radius: 6px; background: #fff; width: 100%;
+}
+textarea { resize: vertical; }
+button {
+  font: inherit; padding: 8px 10px; border-radius: 6px; border: 1px solid #0a66c2;
+  background: #fff; color: #0a66c2; cursor: pointer; font-weight: 600;
+}
+button:disabled { opacity: 0.5; cursor: default; }
+button.primary { background: #0a66c2; color: #fff; }
+.seg { display: flex; gap: 4px; }
+.seg button { flex: 1; font-weight: 500; color: #444; border-color: #c8c8c8; }
+.seg button.on { background: #e8f1fb; color: #0a66c2; border-color: #0a66c2; }
+.card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px; }
+.target-name { font-weight: 700; font-size: 14px; }
+.muted { color: #666; }
+.small { font-size: 12px; margin: 0; }
+details summary { cursor: pointer; margin: 6px 0; color: #0a66c2; }
+.status { padding: 8px 10px; border-radius: 6px; margin-bottom: 10px; background: #e8f1fb; }
+.status.error { background: #fde8e8; color: #9b1c1c; }
+.result { display: flex; flex-direction: column; gap: 6px; }
+.result-head { display: flex; justify-content: space-between; align-items: center; }
+.result-label { font-weight: 700; }
+.count { font-size: 12px; color: #666; }
+.count.over { color: #c0392b; font-weight: 700; }
+.result-actions { display: flex; gap: 6px; }
+.result-actions button { flex: 1; padding: 6px; }
+#results { display: flex; flex-direction: column; gap: 10px; }

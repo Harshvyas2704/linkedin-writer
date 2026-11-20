@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "LinkedIn Message Writer",
+  "version": "1.0.0",
+  "description": "Scans the LinkedIn profile you have open and drafts a personalized connection note or DM with Gemini.",
+  "permissions": ["sidePanel", "scripting", "storage", "tabs", "clipboardWrite"],
+  "host_permissions": [
+    "https://www.linkedin.com/*",
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "LinkedIn Message Writer"
+  }
+}

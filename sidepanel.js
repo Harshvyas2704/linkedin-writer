@@ -50,18 +50,24 @@ async function activeTab() {
 async function scanActiveProfile() {
   const tab = await activeTab();
   if (!/linkedin\.com\/in\//.test(tab?.url || "")) {
-    throw new Error("Open a LinkedIn profile page (linkedin.com/in/...) first.");
+    throw new Error(
+      "Open a LinkedIn profile page (linkedin.com/in/...) first.",
+    );
   }
   const [{ result }] = await chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: scrapeProfile,
   });
   console.log("[scan]", result);
-  if (!result) throw new Error("Scan returned nothing. Reload the LinkedIn tab and try again.");
-  const hasText = result.fallback || result.about || result.experience || result.topCard;
+  if (!result)
+    throw new Error(
+      "Scan returned nothing. Reload the LinkedIn tab and try again.",
+    );
+  const hasText =
+    result.fallback || result.about || result.experience || result.topCard;
   if (!hasText) {
     throw new Error(
-      `Couldn't read any profile text. Debug: ${JSON.stringify(result.debug)}`
+      `Couldn't read any profile text. Debug: ${JSON.stringify(result.debug)}`,
     );
   }
   if (!result.name) result.name = "(name not found, edit below)";
@@ -78,17 +84,29 @@ async function settings() {
 // ---------- tabs ----------
 document.querySelectorAll(".tab").forEach((btn) =>
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach((b) => b.classList.toggle("active", b === btn));
-    document.querySelectorAll(".view").forEach((v) => (v.hidden = v.id !== btn.dataset.view));
+    document
+      .querySelectorAll(".tab")
+      .forEach((b) => b.classList.toggle("active", b === btn));
+    document
+      .querySelectorAll(".view")
+      .forEach((v) => (v.hidden = v.id !== btn.dataset.view));
     status("");
-  })
+  }),
 );
 
 // ---------- persisted fields ----------
 const SAVED = [
-  "apiKey", "model",
-  "myName", "myRole", "myBio", "myGoal", "myLinks", "mySample",
-  "goal", "customGoal", "tone",
+  "apiKey",
+  "model",
+  "myName",
+  "myRole",
+  "myBio",
+  "myGoal",
+  "myLinks",
+  "mySample",
+  "goal",
+  "customGoal",
+  "tone",
 ];
 
 async function loadSaved() {
@@ -117,14 +135,16 @@ $("#goal").addEventListener("change", () => {
 
 function setType(val) {
   state.type = val;
-  document.querySelectorAll("#type button").forEach((b) => b.classList.toggle("on", b.dataset.val === val));
+  document
+    .querySelectorAll("#type button")
+    .forEach((b) => b.classList.toggle("on", b.dataset.val === val));
   chrome.storage.local.set({ type: val });
 }
 document.querySelectorAll("#type button").forEach((b) =>
   b.addEventListener("click", (e) => {
     e.preventDefault();
     setType(b.dataset.val);
-  })
+  }),
 );
 
 // ---------- scan ----------
@@ -143,13 +163,18 @@ $("#scanBtn").addEventListener("click", () =>
     $("#genBtn").disabled = false;
     $("#results").innerHTML = "";
     $("#hooks").hidden = true;
-  })
+  }),
 );
 
 // Clear the scanned profile when the user moves to another page.
 chrome.tabs.onActivated.addListener(resetTarget);
 chrome.tabs.onUpdated.addListener((_, info, tab) => {
-  if (info.url && tab.active && state.target && info.url.split("?")[0] !== state.target.url.split("?")[0]) {
+  if (
+    info.url &&
+    tab.active &&
+    state.target &&
+    info.url.split("?")[0] !== state.target.url.split("?")[0]
+  ) {
     resetTarget();
   }
 });
@@ -178,18 +203,30 @@ $("#genBtn").addEventListener("click", () =>
       role: $("#role").value.trim(),
       extra: $("#extra").value.trim(),
     };
-    const { system, user } = buildMessagePrompt({ me: s, targetText: $("#targetText").value, opts });
-    const raw = await callGemini({ apiKey: s.apiKey, model: s.model, system, user, json: true });
+    const { system, user } = buildMessagePrompt({
+      me: s,
+      targetText: $("#targetText").value,
+      opts,
+    });
+    const raw = await callGemini({
+      apiKey: s.apiKey,
+      model: s.model,
+      system,
+      user,
+      json: true,
+    });
     const data = parseJson(raw);
     renderResults(data, opts.type);
-  })
+  }),
 );
 
 function renderResults(data, type) {
   const limit = type === "note" ? LIMITS.note : null;
 
   const hooks = data.hooks || [];
-  $("#hooks").textContent = hooks.length ? `Picked up: ${hooks.join(" · ")}` : "";
+  $("#hooks").textContent = hooks.length
+    ? `Picked up: ${hooks.join(" · ")}`
+    : "";
   $("#hooks").hidden = !hooks.length;
 
   const box = $("#results");
@@ -204,7 +241,7 @@ function renderResults(data, type) {
       </div>
       <textarea rows="${type === "note" ? 6 : 10}"></textarea>
       <div class="result-actions">
-        <button class="copy">Copy</button>
+        <button class="copy">Copy Message</button>
         ${limit ? '<button class="shorten">Shorten</button>' : ""}
       </div>`;
     const ta = card.querySelector("textarea");
@@ -214,7 +251,9 @@ function renderResults(data, type) {
 
     const updateCount = () => {
       const n = ta.value.length;
-      count.textContent = limit ? `${n}/${limit}` : `${ta.value.trim().split(/\s+/).length} words`;
+      count.textContent = limit
+        ? `${n}/${limit}`
+        : `${ta.value.trim().split(/\s+/).length} words`;
       count.classList.toggle("over", !!limit && n > limit);
     };
     ta.addEventListener("input", updateCount);
@@ -230,9 +269,14 @@ function renderResults(data, type) {
       busy(e.target, "Shortening…", async () => {
         const s = await settings();
         const { system, user } = buildShortenPrompt(ta.value, limit);
-        ta.value = await callGemini({ apiKey: s.apiKey, model: s.model, system, user });
+        ta.value = await callGemini({
+          apiKey: s.apiKey,
+          model: s.model,
+          system,
+          user,
+        });
         updateCount();
-      })
+      }),
     );
 
     box.appendChild(card);
@@ -246,12 +290,18 @@ $("#importBtn").addEventListener("click", () =>
     const s = await settings();
     const p = await scanActiveProfile();
     const { system, user } = buildBioPrompt(formatTarget(p));
-    const bio = await callGemini({ apiKey: s.apiKey, model: s.model, system, user });
+    const bio = await callGemini({
+      apiKey: s.apiKey,
+      model: s.model,
+      system,
+      user,
+    });
     $("#myBio").value = bio;
-    if (!$("#myName").value && !p.name.startsWith("(")) $("#myName").value = p.name;
+    if (!$("#myName").value && !p.name.startsWith("("))
+      $("#myName").value = p.name;
     await chrome.storage.local.set({ myBio: bio, myName: $("#myName").value });
     status("Background filled. Edit it if anything is off.");
-  })
+  }),
 );
 
 loadSaved();

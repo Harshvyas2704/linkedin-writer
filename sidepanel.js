@@ -189,11 +189,14 @@ function resetTarget() {
 
 // ---------- generate ----------
 $("#genBtn").addEventListener("click", () =>
-  busy($("#genBtn"), "Writing…", async () => {
+  busy($("#genBtn"), "Generating", async () => {
     status("");
     const s = await settings();
     if (!s.myBio && !s.myRole) {
-      status("Tip: fill My profile so the messages talk about you.", "info");
+      status(
+        "Tip: fill My profile details soo the messages talk about you.",
+        "info",
+      );
     }
     const opts = {
       type: state.type,

@@ -189,7 +189,7 @@ function resetTarget() {
 
 // ---------- generate ----------
 $("#genBtn").addEventListener("click", () =>
-  busy($("#genBtn"), "Generating message", async () => {
+  busy($("#genBtn"), "Genrating message", async () => {
     status("");
     const s = await settings();
     if (!s.myBio && !s.myRole) {
